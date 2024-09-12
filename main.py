@@ -133,6 +133,6 @@ class FernetEncrypter:
 
 if __name__ == '__main__':
     enc = FernetEncrypter('key.k')
-    enc.folder_cryptor(r"", 1)
+    enc.folder_cryptor(r"", encode=1)
 
     print('done')
