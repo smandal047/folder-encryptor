@@ -116,7 +116,6 @@ class FernetEncrypter:
             # checking if it is a file
             if os.path.isfile(file):
 
-                # rename_file
                 new_file = self.rename_file(folder_path, file, encode)
 
                 print(f'crypting old {file} -> new {new_file}')
@@ -124,15 +123,21 @@ class FernetEncrypter:
 
             # else calling itself
             else:
-                self.folder_cryptor(file, encode)
+                # encrypted folder names were bugging the os.stat logics
+                # hence while decrypting renaming first to transverse properly
+                if encode:
+                    self.folder_cryptor(file, encode)
+                    self.rename_file(folder_path, file, encode)
+                else:
+                    file = self.rename_file(folder_path, file, encode)
+                    self.folder_cryptor(file, encode)
 
-                # rename folder
-                self.rename_file(folder_path, file, encode)
+                   
         
 
 
 if __name__ == '__main__':
     enc = FernetEncrypter('key.k')
-    enc.folder_cryptor(r"", encode=1)
+    enc.folder_cryptor(r"D:\Downloads\ven\New folder", encode=0)
 
     print('done')
