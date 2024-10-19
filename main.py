@@ -1,6 +1,4 @@
 import os
-import json
-import datetime
 
 from cryptography.fernet import Fernet
 
@@ -75,39 +73,7 @@ class FernetEncrypter:
         with open(key_path, 'rb') as filekey:
             self.key = filekey.read()
 
-        # self.check_time(check=False)
-
-    def check_time(self, check: bool, write: bool = False) -> None:
-
-        val_path = 'val.t'
-        time_format = "%Y-%m-%d %H:%M:%S"
-        now = datetime.datetime.today().strftime(time_format)
-        date_obj = lambda x: datetime.datetime.strptime(x, time_format)
-
-        if check:
-            diff = date_obj(now) - date_obj(self.time_key['last_date'])
-            if not diff.days > self.time_key['date_diff']:
-                raise NotImplementedError(f"Be strong!!! \nMax days of {self.time_key['date_diff']} has not passed !!")
-            else:
-                write = True
-
-        if write:
-
-            self.time_key['last_date'] = now
-
-            # string the key in a file
-            with open(val_path, 'w') as filekey:
-                filekey.write(self.string_cryptor(json.dumps(self.time_key), encode=True))
-
-        else:
-            # opening the key
-            with open(val_path, 'r') as filekey:
-                self.time_key = json.loads(self.string_cryptor(filekey.read(), encode=False))
-
     def folder_cryptor(self, folder_path: str, encode: bool) -> None:
-        
-        # if not encode:
-        # self.check_time(check=True)
 
         # iterate over files in that directory
         for filename in os.listdir(folder_path):
@@ -132,12 +98,9 @@ class FernetEncrypter:
                     file = self.rename_file(folder_path, file, encode)
                     self.folder_cryptor(file, encode)
 
-                   
-        
-
 
 if __name__ == '__main__':
     enc = FernetEncrypter('key.k')
-    enc.folder_cryptor(r"D:\Downloads\ven\New folder", encode=0)
+    enc.folder_cryptor(r"", encode=1)
 
-    print('done')
+    print('---------------- done ----------------')
