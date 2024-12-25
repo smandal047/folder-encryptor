@@ -8,7 +8,7 @@ try:
     with open(log_file, 'r+') as f:
         f.truncate(0) # need '0' when using r+
 except FileNotFoundError:
-    pass
+    os.mkdir(os.path.dirname(log_file))
 
 
 class SingletonLogger:

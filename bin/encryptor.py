@@ -1,5 +1,5 @@
 import os
-from logger import logger as logging
+from bin.logger import logger as logging
 
 from cryptography.fernet import Fernet
 

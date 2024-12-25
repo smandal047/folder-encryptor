@@ -1,6 +1,6 @@
 # folder-encryptor
 
-![Alt text](images\GUI.jpg "Title")
+![Alt text](/images/GUI.jpg "GUI")
 
 **Recursively encrypts the given path and also encrypts the name of file and folders**
 

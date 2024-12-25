@@ -1,3 +1,9 @@
 cffi==1.15.1
 cryptography==41.0.3
+cx-Freeze==6.15.16
+cx-Logging==3.1.0
+lief==0.12.3
 pycparser==2.21
+PyQt5==5.15.10
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.13.0
