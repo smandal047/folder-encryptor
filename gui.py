@@ -1,13 +1,11 @@
 import sys
-import time
-import multiprocessing as mp
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QRadioButton, QLineEdit, QCheckBox
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 
-from main import FernetEncrypter
-from logger import logger as logging
+from bin.encryptor import FernetEncrypter
+from bin.logger import logger as logging
 
 class MyWindow(QWidget):
 
@@ -16,7 +14,8 @@ class MyWindow(QWidget):
 
         # Set the window title and size
         self.setWindowTitle('Encryptor')
-        self.setGeometry(700, 300, 500, 250)
+        # self.setGeometry(700, 300, 500, 250)
+        self.setFixedSize(500, 250)
 
         self.logger = logging()
         self.encode = True
@@ -137,13 +136,11 @@ class MyWindow(QWidget):
         self.logger.info(f'Encryption successfull, Status:{self.status}')
 
 
-# Main function to run the application
-def main():
+
+# Run the main function if this script is executed
+if __name__ == '__main__':
+# if __name__.endswith('__main__'):
     app = QApplication(sys.argv)  # Create an application instance
     window = MyWindow()           # Create an instance of the window
     window.show()                 # Show the window
     sys.exit(app.exec_())         # Start the application's event loop
-
-# Run the main function if this script is executed
-if __name__ == '__main__':
-    main()
