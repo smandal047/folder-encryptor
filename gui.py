@@ -135,7 +135,7 @@ class MyWindow(QWidget):
 
         elif self.button.text() == 'Done':
             self.button.setEnabled(False)
-            self.log_text.setText(f'Succ:{self.status['success']},Fail:{self.status['fail']}')
+            self.log_text.setText(f"Succ:{self.status['success']},Fail:{self.status['fail']}")
             self.logger.info('Cryption Successful')
         else:
             self.encrypt_thread.terminate()
