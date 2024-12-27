@@ -1,11 +1,28 @@
 import sys
+import os
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QRadioButton, QLineEdit, QCheckBox
 from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
-from bin.encryptor import FernetEncrypter
-from bin.logger import logger as logging
+from bin import FernetEncrypter
+from bin import logger as logging
+
+
+class QtEncryptor(QThread):
+    signal = pyqtSignal(dict)
+
+    def __init__(self, path:str, encode:bool, code_lvl:bool) -> None:
+        super().__init__()
+        self.path = path
+        self.encode = encode
+        self.code_lvl = code_lvl
+    
+    def run(self) -> None:
+        enc = FernetEncrypter('key.k')
+        self.status = enc.folder_cryptor(self.path, encode=self.encode, code_lvl=self.code_lvl)
+        self.signal.emit(self.status)
+
 
 class MyWindow(QWidget):
 
@@ -18,9 +35,9 @@ class MyWindow(QWidget):
         self.setFixedSize(500, 250)
 
         self.logger = logging()
+        self.path = ''
         self.encode = True
         self.code_lvl = False
-        self.path = ''
         self.status = 'Not Set'
 
         self.init_ui()
@@ -97,44 +114,46 @@ class MyWindow(QWidget):
         self.logger.info(f'Button state change: {b.text()} to {b.isChecked()}')
 
     def on_click(self):
-        
+
         if self.button.text() == 'Start Cryption':
-            self.button.setText("Kill Task")
+            
             self.logger.info(f'Cryption Started, encryption:{self.encode}, codeLvl:{self.code_lvl} for path:{self.t1.text()}')
             self.path = r'{}'.format(self.t1.text())
-            self.t1.setEnabled(False)
-            self.r1.setEnabled(False)
-            self.r2.setEnabled(False)
-            self.c1.setEnabled(False)
-
-            self.start_encrypt_process()
-
-            self.button.setText("Done")
-            self.on_click()
+            
+            if os.path.exists(self.path):
+                self.t1.setEnabled(False)
+                self.r1.setEnabled(False)
+                self.r2.setEnabled(False)
+                self.c1.setEnabled(False)
+                self.encrypt_thread = QtEncryptor(self.path, self.encode, self.code_lvl)
+                self.encrypt_thread.signal.connect(self.get_encrypt_process)
+                self.encrypt_thread.start()
+                self.button.setText("Kill Task")
+            else:
+                self.log_text.setText('Incorrect path, Try Again!')
+                self.logger.warning('Incorrect path, Try Again!')
 
         elif self.button.text() == 'Done':
             self.button.setEnabled(False)
-
-            Succ = self.status['success']
-            Fail = self.status['fail']
-            self.log_text.setText(f'Succ:{Succ},Fail:{Fail}')
-            self.log_text.setHidden(False)
-            self.logger.info(f'Cryption Successful')
+            self.log_text.setText(f"Succ:{self.status['success']},Fail:{self.status['fail']}")
+            self.logger.info('Cryption Successful')
         else:
+            self.encrypt_thread.terminate()
             self.button.setText("Restart App")
             self.button.setEnabled(False)
-            self.log_text.setHidden(False)
-            self.logger.warning(f'Cryption Killed in between')
+            self.log_text.setText('! Terminated Check logs !')
+            self.logger.warning('Cryption Terminated in between')
 
-    def start_encrypt_process(self):
+        self.log_text.setHidden(False)
+
+    def get_encrypt_process(self, status):
         # run is as separate thread which can be killed via application
 
-        enc = FernetEncrypter('key.k')
-        path = self.path
-        
-        self.status = enc.folder_cryptor(path, encode=self.encode, code_lvl=self.code_lvl)
+        self.status = status
         self.logger.info(f'Encryption successfull, Status:{self.status}')
-
+        self.button.setText("Done")
+        self.on_click()
+        
 
 
 # Run the main function if this script is executed

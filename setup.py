@@ -15,3 +15,7 @@ setup(
     options={"build_exe": build_exe_options},
     executables=[Executable("gui.py", base="Win32GUI")],
 )
+
+# code to run setup.py
+# for ref: https://cx-freeze.readthedocs.io/en/6.15.16/setup_script.html
+# python setup.py bdist_msi

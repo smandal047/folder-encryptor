@@ -4,7 +4,6 @@ from bin.logger import logger as logging
 from cryptography.fernet import Fernet
 
 
-
 class FernetEncrypter:
 
     def __init__(self, key_path: str) -> None:
